@@ -1,26 +1,35 @@
 {
   "name": "cox",
-  "version": "0.1.0",
-  "private": true,
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/majorleaf/coX.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/majorleaf/coX/issues"
+  },
+  "homepage": "https://github.com/majorleaf/coX#readme",
   "dependencies": {
-    "next": "16.3.4",
-    "react": "19.2.8",
-    "react-dom": "19.2.8"
+    "dockerode": "^5.0.1",
+    "express": "^5.2.1",
+    "socket.io": "^4.8.3",
+    "uuid": "^14.0.2"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "eslint": "^9",
-    "eslint-config-next": "16.3.4",
-    "tailwindcss": "^4",
-    "typescript": "^5"
+    "@types/dockerode": "^4.0.1",
+    "@types/express": "^5.0.6",
+    "@types/node": "^26.4.1",
+    "@types/uuid": "^10.0.0",
+    "tsx": "^4.23.13",
+    "typescript": "^7.0.2"
   }
 }

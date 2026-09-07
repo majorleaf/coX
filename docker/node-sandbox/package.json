@@ -1,0 +1,12 @@
+{
+  "name": "node-sandbox-runner",
+  "private": true,
+  "dependencies": {
+    "acorn": "^8.11.3",
+    "astring": "^1.8.6"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5",
+    "@types/node": "^20.11.0"
+  }
+}
