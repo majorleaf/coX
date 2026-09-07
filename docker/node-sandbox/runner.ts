@@ -54,7 +54,7 @@ const instrumented = astring.generate(ast);
 
 //function  __track() calls at runtime
 (global as any). __track = (line: number) => {
-    process.stdout.write(`__PROGRESS__:$(line):${((Date.now() - startTime) / 1000).toFixed(3)}\n`);
+    process.stdout.write(`__PROGRESS__:${line}:${((Date.now() - startTime) / 1000).toFixed(3)}\n`);
 
 };
 
