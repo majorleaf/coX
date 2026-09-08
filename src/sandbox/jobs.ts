@@ -1,6 +1,3 @@
-import { JobStatus } from "dockerode";
-
-
 export type JobStatus = 'running' | 'completed' | 'failed' | 'timeout';
 
 export interface Job {
