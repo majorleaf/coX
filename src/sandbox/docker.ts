@@ -2,6 +2,7 @@ import Docker from 'dockerode';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
+import write = require('fs');
 
 //connects to local daemonover the socket
 const docker = new Docker();
@@ -32,8 +33,38 @@ export async function runInSandbox(
             Image: 'code-sandbox-node',
             Cmd: ['node', 'runner.js'],
             HostConfig: {
-                
-            }
-        })
+                Binds: [`${hostCodePath}:/sandbox/user_code.js:ro`],
+                Memory: 50 * 1024 * 1024,
+                MemorySwap: 50 * 1024 * 1024,
+                NanoCpus: 500_000_000,
+                NetworkMode: 'none',
+                PidsLimit: 64,
+                AutoRemove: false
+
+            },
+            Tty: false
+        });
+
+        //Attach to the container output stream BEFORE starting it, so we dont miss any early output 
+        const stream = await container.attach({
+            stream: true,
+            stdout: true,
+            stderr: true
+        });
+
+        let stdout = '';
+        let stderr = '';
+
+
+        //Docker mi=ultiplexes stdout/stderr together on one stream with an 8-byte
+        //header per chunk, dockerode gives us a helper to split them cleanly
+        container.modem.demuxStream(
+            stream,
+            {write: (chunk: Buffer) => {stdout += handleChunk(chunk, onProgress); } } as any,
+            {write: (chunk: Buffer) => {stdout += chunk.toString(); } } as any
+        );
+
+        await container.start();
+
     }
 }
