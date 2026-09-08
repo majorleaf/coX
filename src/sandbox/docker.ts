@@ -66,5 +66,29 @@ export async function runInSandbox(
 
         await container.start();
 
+        // personally enforced the hard timeout because docker wont do this automatically
+        const TIMEOUT_MS = 8000;
+        const timeoutHandle = setTimeout(async () => {
+            timedOut = true;
+            try {
+                await container?.kill();
+            } catch {
+                // ignore ifcontainer may have already exited naturally 
+            }
+        }, TIMEOUT_MS);
+         
+
+        // Wait for the container to finish or be killed above
+        const waitResult = await container.wait();
+        clearTimeout(timeoutHandle);
+
+        return {
+            stdout,
+            stderr,
+            exitCode: waitResult.StatusCode,
+            timedOut
+        };
+    } finally {
+
     }
 }
