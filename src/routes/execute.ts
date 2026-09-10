@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { Server as SocketIOServer } from 'socket.io';
 import { runInSandbox } from '../sandbox/docker';
 import { createJob, getJob, updateJob, getElapsedMs } from '../sandbox/jobs';
+import { exitCode } from 'node:process';
 
 const router = Router();
 
@@ -35,6 +36,8 @@ router.post('/execute', (req: Request, res: Response) => {
       });
 
       // push the update immediately to any client subscribed to this job's room
+      const payload = [ jobId, line, elapsed ];
+      job.events.push({ type: 'progress', payload });
       io?.to(jobId).emit('progress', { jobId, line, elapsed });
     }
   })
@@ -46,6 +49,17 @@ router.post('/execute', (req: Request, res: Response) => {
         stderr: result.stderr,
         exitCode: result.exitCode
       });
+
+      const payload = { 
+        jobId,
+         status: finalStatus,
+          stdout: result.stdout,
+           stderr: result.stderr,
+          exitCode: result.exitCode 
+        }
+        const job = getJob(jobId);
+        job?.events.push({ type: 'done', payload });
+        io?.to(jobId).emit('done', payload);
 
       //Notify that the job is done
       io?.to(jobId).emit('done', {

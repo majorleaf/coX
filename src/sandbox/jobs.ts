@@ -9,6 +9,7 @@ export interface Job {
   stdout: string;
   stderr: string;
   exitCode: number | null;
+  events: Array<{ type: 'progress' | 'done'; payload: any }>  // Added event logs to Job
 }
 
 const jobs = new Map<string, Job>();
@@ -22,7 +23,8 @@ export function createJob(id: string): Job {
     linesExecuted: 0,
     stdout: '',
     stderr: '',
-    exitCode: null
+    exitCode: null,
+    events: []
   };
   jobs.set(id, job);
   return job;

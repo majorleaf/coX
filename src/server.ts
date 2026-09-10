@@ -1,6 +1,7 @@
 import express from 'express';
 import http from 'http';
 import { Server as SocketIOServer } from 'socket.io';
+import { getJob } from './sandbox/jobs';
 import executeRouter, { setSocketServer } from './routes/execute';
 
 const app = express();
@@ -19,7 +20,16 @@ io.on('connection', (socket) => {
   socket.on('subscribe', (jobId: string) => {
     socket.join(jobId);
     console.log(`Socket ${socket.id} subscribed to job ${jobId}`);
+
+    //catch client 
+    const job = getJob(jobId);
+    if (job ) {
+      for (const event of job.events) {
+        socket.emit(event.type, event.payload)
+      }
+    }
   });
+  
   socket.on('disconnect', () => {
     console.log(`client disconnected: ${socket.id}`);
   });
