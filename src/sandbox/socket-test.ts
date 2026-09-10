@@ -4,6 +4,10 @@ import { io as ioClient } from 'socket.io-client';
 
 const socket = ioClient('http://localhost:3000');
 
+socket.on('connect_error', (err) => {
+  console.error('Connection failed:', err.message);
+});
+
 socket.on('connect', async () => {
   console.log('Connected, submitting code...');
 
@@ -14,7 +18,7 @@ socket.on('connect', async () => {
       code: 'console.log("hi");\nfor (let i=0;i<3;i++){ console.log(i); }'
     })
   });
-  const { jobId } = await res.json();
+  const { jobId } = await res.json() as { jobId: String};
   console.log('Job submitted:', jobId);
 
   socket.emit('subscribe', jobId);

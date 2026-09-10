@@ -31,6 +31,6 @@ setSocketServer(io);
 
 
 const PORT = 3000;
-app.listen(PORT, () => {
+httpServer.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
 });
