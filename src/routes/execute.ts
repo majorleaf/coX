@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { Server as SocketIOServer } from 'socket.io';
 import { runInSandbox } from '../sandbox/docker';
 import { createJob, getJob, updateJob, getElapsedMs } from '../sandbox/jobs';
-import { exitCode } from 'node:process';
+import { exitCode, stderr } from 'node:process';
 
 const router = Router();
 
@@ -36,9 +36,9 @@ router.post('/execute', (req: Request, res: Response) => {
       });
 
       // push the update immediately to any client subscribed to this job's room
-      const payload = [ jobId, line, elapsed ];
+      const payload = {  jobId, line, elapsed };
       job.events.push({ type: 'progress', payload });
-      io?.to(jobId).emit('progress', { jobId, line, elapsed });
+      io?.to(jobId).emit('progress', payload);
     }
   })
     .then((result) => {
@@ -61,24 +61,28 @@ router.post('/execute', (req: Request, res: Response) => {
         job?.events.push({ type: 'done', payload });
         io?.to(jobId).emit('done', payload);
 
-      //Notify that the job is done
-      io?.to(jobId).emit('done', {
-        jobId,
-        status: finalStatus,
-        stdout: result.stdout,
-        stderr: result.stderr,
-        exitCode: result.exitCode
-      });
     })
     .catch((err) => {
       updateJob(jobId, {
         status: 'failed',
         stderr: String(err)
       });
+
+      // fix : catch block previously did nothing beyond updateJob
+      const payload = {
+        jobId,
+        status: 'failed' as const,
+        stdout: '',
+        stderr: String(err),
+        exitCode: null
+      };
+      const job = getJob(jobId);
+      job?.events.push({ type: 'done', payload });
+      io?.to(jobId).emit('done', payload);
     });
 });
 
-// GET /status/:jobId — poll for current status
+// GET /status/:jobId poll for current status
 router.get('/status/:jobId', (req: Request, res: Response) => {
   const job = getJob(req.params.jobId as string);
 
