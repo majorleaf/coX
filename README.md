@@ -10,6 +10,7 @@ Submit JavaScript source code via HTTP, get it executed inside a locked-down Doc
 
 ## Why it's safe - Sandboxing & Security Measures 
 Executing untrusted user code is inherently dangerous. To prevent malicious scripts from harming the host machine, every execution happens inside an ephemeral, strictly isolated Docker container. The untrusted code never touches the host system.
+
 It  enforces the following strict security constraints on every container using the Docker Engine API:
 No Network Access: Container networking is completely disabled (NetworkMode: 'none'). The code cannot make outbound HTTP requests, preventing data exfiltration or botnet participation.
 50MB Memory Cap: Strict RAM limits prevent runaway memory usage or memory exhaustion attacks.
