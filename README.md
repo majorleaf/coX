@@ -9,15 +9,20 @@ A sandboxed remote code execution backend that safely runs untrusted JavaScript 
 Submit JavaScript source code via HTTP, get it executed inside a locked-down Docker container, and receive live updates — which line is currently running, elapsed time, and final output — pushed to you in real time instead of blocking on a single long HTTP request.
 
 ## Why it's safe - Sandboxing & Security Measures 
-Executing untrusted user code is inherently dangerous. To prevent malicious scripts from harming the host machine, every execution happens inside an ephemeral, strictly isolated Docker container. The untrusted code never touches the host system.
+   Executing untrusted user code is inherently dangerous. To prevent malicious scripts from harming the host machine, every execution happens inside an ephemeral, strictly isolated Docker container. The untrusted code never touches the host system.
 
-It  enforces the following strict security constraints on every container using the Docker Engine API:
-No Network Access: Container networking is completely disabled (NetworkMode: 'none'). The code cannot make outbound HTTP requests, preventing data exfiltration or botnet participation.
-50MB Memory Cap: Strict RAM limits prevent runaway memory usage or memory exhaustion attacks.
-0.5 CPU Core Limit: Caps compute usage to ensure no single execution can hog the host system's processing power.
-Process Limit (PID Cap): Blocks the creation of massive amounts of child processes, effectively neutralizing fork-bomb style attacks.
-Non-Root Execution: Code is executed as an unprivileged, low-permission user inside the container, preventing system-level tampering.
-8-Second Timeout: If a script enters an infinite loop or runs too long, the container is hard-killed and instantly destroyed.
+It enforces the following strict security constraints on every container using the Docker Engine API:
+   -No Network Access: Container networking is completely disabled (NetworkMode: 'none'). The code cannot make outbound HTTP requests, preventing data exfiltration or botnet participation.
+   
+   -50MB Memory Cap: Strict RAM limits prevent runaway memory usage or memory exhaustion attacks.
+   
+   -0.5 CPU Core Limit: Caps compute usage to ensure no single execution can hog the host system's processing power.
+   
+   -Process Limit (PID Cap): Blocks the creation of massive amounts of child processes, effectively neutralizing fork-bomb style attacks.
+    
+   -Non-Root Execution: Code is executed as an unprivileged, low-permission user inside the container, preventing system-level tampering.
+
+   -8-Second Timeout: If a script enters an infinite loop or runs too long, the container is hard-killed and instantly destroyed.
 
 ## How progress tracking works
 
